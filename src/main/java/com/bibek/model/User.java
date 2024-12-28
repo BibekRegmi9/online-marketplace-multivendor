@@ -2,12 +2,10 @@ package com.bibek.model;
 
 import com.bibek.enums.USER_ROLE;
 import com.bibek.utils.common.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -18,6 +16,7 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode
 public class User extends BaseEntity {
 
     @Id
@@ -36,7 +35,10 @@ public class User extends BaseEntity {
 
     private USER_ROLE role = USER_ROLE.ROLE_CUSTOMER;
 
+    @OneToMany
     private Set<Address> address = new HashSet<>();
 
+    @ManyToMany
+    @JsonIgnore
     private Set<Coupon> usedCoupons = new HashSet<>();
 }
