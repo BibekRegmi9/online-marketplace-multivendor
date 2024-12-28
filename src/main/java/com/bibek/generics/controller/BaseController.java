@@ -3,7 +3,9 @@ package com.bibek.generics.controller;
 import com.bibek.generics.enums.ResponseStatus;
 import com.bibek.generics.pojo.GlobalApiResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.stereotype.Service;
 
+@Service
 public class BaseController {
 
 
