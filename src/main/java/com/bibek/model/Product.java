@@ -13,7 +13,6 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode
 public class Product extends BaseEntity {
     @Id
     @SequenceGenerator(name = "products_seq_gen", sequenceName = "products_seq")
