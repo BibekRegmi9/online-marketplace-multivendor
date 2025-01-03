@@ -1,4 +1,10 @@
 package com.bibek.service.auth;
 
-public class AuthService {
+
+import com.bibek.request.SignupRequest;
+
+public interface AuthService {
+    String registerUser(SignupRequest request);
+
+
 }
