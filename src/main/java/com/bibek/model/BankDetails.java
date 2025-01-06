@@ -1,16 +1,14 @@
 package com.bibek.model;
 
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @NotNull
+@Builder
 public class BankDetails {
     private String accountNumber;
     private String accountHolderName;

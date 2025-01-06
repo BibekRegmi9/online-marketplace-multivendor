@@ -20,6 +20,7 @@ public class MessageConstants {
     public static final String COULD_NOT_DELETE = "could.not.delete";
     public static final String CANT_UPDATE = "cant.update";
     public static final String USER = "user";
+    public static final String Seller = "seller";
     public static final String ROLE = "role";
     public static final String USER_REGISTRATION="user.registered";
     public static final String WRONG_OTP="wrong.otp";
