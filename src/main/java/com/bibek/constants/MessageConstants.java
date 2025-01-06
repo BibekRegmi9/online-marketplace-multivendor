@@ -22,4 +22,8 @@ public class MessageConstants {
     public static final String USER = "user";
     public static final String ROLE = "role";
     public static final String USER_REGISTRATION="user.registered";
+    public static final String WRONG_OTP="wrong.otp";
+    public static final String SEND_OTP="send.otp";
+    public static final String LOGIN_SUCCESS="login.success";
+
 }
