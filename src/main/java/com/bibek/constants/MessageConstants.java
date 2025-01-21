@@ -28,5 +28,7 @@ public class MessageConstants {
     public static final String LOGIN_SUCCESS="login.success";
     public static final String VERIFY_OTP="verify.otp";
     public static final String DUPLICATE_EMAIL_VALIDATION="email.valid";
+    public static final String MRP_PRICE_ILLEGAL="mrp.price.illegal";
+    public static final String PRODUCT="product";
 
 }

@@ -27,7 +27,7 @@ public class Product extends BaseEntity {
 
     private int sellingPrice;
 
-    private int discountPrice;
+    private int discountPercentage;
 
     private int quantity;
 
