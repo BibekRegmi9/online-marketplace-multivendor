@@ -6,17 +6,18 @@ import com.bibek.constants.MessageConstants;
 import com.bibek.enums.AccountStatus;
 import com.bibek.enums.USER_ROLE;
 import com.bibek.exception.CustomRunTimeException;
-import com.bibek.model.Address;
-import com.bibek.model.BankDetails;
-import com.bibek.model.BusinessDetails;
-import com.bibek.model.Seller;
+import com.bibek.model.*;
 import com.bibek.repository.AddressRepository;
 import com.bibek.repository.SellerRepository;
+import com.bibek.repository.VerificationCodeRepository;
 import com.bibek.service.seller.SellerService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class SellerServiceImpl implements SellerService {
@@ -25,14 +26,16 @@ public class SellerServiceImpl implements SellerService {
     private final JwtProvider jwtProvider;
     private final PasswordEncoder passwordEncoder;
     private final AddressRepository addressRepository;
+    private final VerificationCodeRepository verificationCodeRepository;
 
-    public SellerServiceImpl(CustomMessageSource customMessageSource, SellerRepository sellerRepository, JwtProvider jwtProvider, PasswordEncoder passwordEncoder, AddressRepository addressRepository) {
+    public SellerServiceImpl(CustomMessageSource customMessageSource, SellerRepository sellerRepository, JwtProvider jwtProvider, PasswordEncoder passwordEncoder, AddressRepository addressRepository, VerificationCodeRepository verificationCodeRepository) {
         this.customMessageSource = customMessageSource;
         this.sellerRepository = sellerRepository;
         this.jwtProvider = jwtProvider;
         this.passwordEncoder = passwordEncoder;
 
         this.addressRepository = addressRepository;
+        this.verificationCodeRepository = verificationCodeRepository;
     }
 
     @Override
@@ -44,6 +47,11 @@ public class SellerServiceImpl implements SellerService {
 
     @Override
     public Seller createSeller(Seller request) {
+        Optional<VerificationCode> verificationCode = Optional.ofNullable(verificationCodeRepository.findByEmail(request.getEmail()));
+        if(verificationCode.isPresent()){
+            throw new CustomRunTimeException(customMessageSource.get(MessageConstants.DUPLICATE_EMAIL_VALIDATION));
+        }
+
         Seller oldSeller = sellerRepository.findByEmail(request.getEmail());
         if(oldSeller != null){
             throw new CustomRunTimeException(customMessageSource.get(MessageConstants.Seller, customMessageSource.get(MessageConstants.ERROR_ALREADY_EXIST)));
@@ -87,67 +95,79 @@ public class SellerServiceImpl implements SellerService {
     }
 
     @Override
+    @Transactional
     public Seller updateSeller(Long id, Seller sellerRequest) {
         Seller existingSeller = getSellerById(id);
-        if(existingSeller != null && sellerRequest!= null){
+        if (existingSeller != null && sellerRequest != null) {
 
-            String accountHolderName = sellerRequest.getBankDetails().getAccountHolderName();
-            String accountNumber = sellerRequest.getBankDetails().getAccountNumber();
-            String ifscCode = sellerRequest.getBankDetails().getIfscCode();
-
-            Seller.SellerBuilder updatedSeller = Seller.builder()
-                    .sellerName(sellerRequest.getSellerName())
-                    .email(sellerRequest.getEmail())
-                    .password(passwordEncoder.encode(sellerRequest.getPassword()))
-                    .pickupAddress(sellerRequest.getPickupAddress())
-                    .role(sellerRequest.getRole())
-                    .mobile(sellerRequest.getMobile());
-
+            // Update fields only if they are not null or empty
+            if (sellerRequest.getSellerName() != null) {
+                existingSeller.setSellerName(sellerRequest.getSellerName());
+            }
+            if (sellerRequest.getEmail() != null) {
+                existingSeller.setEmail(sellerRequest.getEmail());
+            }
+            if(sellerRequest.getPassword() != null){
+                existingSeller.setPassword(passwordEncoder.encode(sellerRequest.getPassword()));
+            }
+            if (sellerRequest.getMobile() != null) {
+                existingSeller.setMobile(sellerRequest.getMobile());
+            }
+            if (sellerRequest.getRole() != null) {
+                existingSeller.setRole(sellerRequest.getRole());
+            }
             if (sellerRequest.getGST() != null && !sellerRequest.getGST().isEmpty()) {
-                updatedSeller.GST(sellerRequest.getGST());
+                existingSeller.setGST(sellerRequest.getGST());
             }
 
-            // Assign bank details only if they are present and valid
-            if (sellerRequest.getBankDetails() != null &&
-                    sellerRequest.getBankDetails().getAccountHolderName() != null &&
-                    !sellerRequest.getBankDetails().getAccountHolderName().isEmpty() &&
-                    sellerRequest.getBankDetails().getAccountNumber() != null &&
-                    !sellerRequest.getBankDetails().getAccountNumber().isEmpty() &&
-                    sellerRequest.getBankDetails().getIfscCode() != null &&
-                    !sellerRequest.getBankDetails().getIfscCode().isEmpty()) {
-                updatedSeller.bankDetails(BankDetails.builder()
-                                .accountHolderName(accountHolderName)
-                                .accountNumber(accountNumber)
-                                .ifscCode(ifscCode)
-                        .build());
-
+            // Update Bank Details
+            if (sellerRequest.getBankDetails() != null) {
+                BankDetails bankDetails = existingSeller.getBankDetails();
+                if (bankDetails == null) {
+                    bankDetails = new BankDetails();
+                }
+                if (sellerRequest.getBankDetails().getBankName() != null) {
+                    bankDetails.setBankName(sellerRequest.getBankDetails().getBankName());
+                }
+                if (sellerRequest.getBankDetails().getAccountHolderName() != null) {
+                    bankDetails.setAccountHolderName(sellerRequest.getBankDetails().getAccountHolderName());
+                }
+                if (sellerRequest.getBankDetails().getAccountNumber() != null) {
+                    bankDetails.setAccountNumber(sellerRequest.getBankDetails().getAccountNumber());
+                }
+                if (sellerRequest.getBankDetails().getIfscCode() != null) {
+                    bankDetails.setIfscCode(sellerRequest.getBankDetails().getIfscCode());
+                }
+                existingSeller.setBankDetails(bankDetails);
             }
 
-            if(sellerRequest.getBusinessDetails() != null && sellerRequest.getBusinessDetails().getBusinessName() != null){
-                BusinessDetails updatedBusinessDetails = sellerRequest.getBusinessDetails();
-                updatedBusinessDetails.setBusinessName(sellerRequest.getBusinessDetails().getBusinessName());
-                updatedSeller.businessDetails(updatedBusinessDetails);
+            // Update Pickup Address
+            if (sellerRequest.getPickupAddress() != null) {
+                Address pickupAddress = existingSeller.getPickupAddress();
+                if (pickupAddress == null) {
+                    pickupAddress = new Address();
+                }
+                if (sellerRequest.getPickupAddress().getAddress() != null) {
+                    pickupAddress.setAddress(sellerRequest.getPickupAddress().getAddress());
+                }
+                if (sellerRequest.getPickupAddress().getMobile() != null) {
+                    pickupAddress.setMobile(sellerRequest.getPickupAddress().getMobile());
+                }
+                if (sellerRequest.getPickupAddress().getCity() != null) {
+                    pickupAddress.setCity(sellerRequest.getPickupAddress().getCity());
+                }
+                if (sellerRequest.getPickupAddress().getState() != null) {
+                    pickupAddress.setState(sellerRequest.getPickupAddress().getState());
+                }
+                existingSeller.setPickupAddress(pickupAddress);
             }
 
-            if(sellerRequest.getPickupAddress() != null &&
-                    sellerRequest.getPickupAddress().getAddress() != null &&
-                    sellerRequest.getPickupAddress().getMobile() != null &&
-                    sellerRequest.getPickupAddress().getCity() != null &&
-                    sellerRequest.getPickupAddress().getState() != null
-            ) {
-                updatedSeller.pickupAddress(Address.builder()
-                                .address(sellerRequest.getPickupAddress().getAddress())
-                                .mobile(sellerRequest.getPickupAddress().getMobile())
-                                .city(sellerRequest.getPickupAddress().getCity())
-                                .state(sellerRequest.getPickupAddress().getState())
-                        .build());
-            }
-
-            // Build the seller object
-            Seller finalUpdatedSeller = updatedSeller.build();
-            return sellerRepository.save(finalUpdatedSeller);
+            return sellerRepository.save(existingSeller);
+        } else {
+            throw new EntityNotFoundException("Seller not found with id: " + id);
         }
     }
+
 
     @Override
     public void deleteSeller(Long id) {

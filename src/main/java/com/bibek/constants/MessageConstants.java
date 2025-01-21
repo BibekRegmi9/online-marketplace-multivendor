@@ -26,5 +26,7 @@ public class MessageConstants {
     public static final String WRONG_OTP="wrong.otp";
     public static final String SEND_OTP="send.otp";
     public static final String LOGIN_SUCCESS="login.success";
+    public static final String VERIFY_OTP="verify.otp";
+    public static final String DUPLICATE_EMAIL_VALIDATION="email.valid";
 
 }

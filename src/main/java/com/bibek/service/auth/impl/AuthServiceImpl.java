@@ -6,9 +6,11 @@ import com.bibek.constants.MessageConstants;
 import com.bibek.enums.USER_ROLE;
 import com.bibek.exception.CustomRunTimeException;
 import com.bibek.model.Cart;
+import com.bibek.model.Seller;
 import com.bibek.model.User;
 import com.bibek.model.VerificationCode;
 import com.bibek.repository.CartRepository;
+import com.bibek.repository.SellerRepository;
 import com.bibek.repository.UserRepository;
 import com.bibek.repository.VerificationCodeRepository;
 import com.bibek.request.LoginRequest;
@@ -47,8 +49,9 @@ public class AuthServiceImpl implements AuthService {
     private final EmailService emailService;
 
     private final CustomUserService customUserService;
+    private final SellerRepository sellerRepository;
 
-    public AuthServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, CartRepository cartRepository, JwtProvider jwtProvider, VerificationCodeRepository verificationCodeRepository, CustomMessageSource customMessageSource, EmailService emailService, CustomUserService customUserService) {
+    public AuthServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, CartRepository cartRepository, JwtProvider jwtProvider, VerificationCodeRepository verificationCodeRepository, CustomMessageSource customMessageSource, EmailService emailService, CustomUserService customUserService, SellerRepository sellerRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.cartRepository = cartRepository;
@@ -57,6 +60,7 @@ public class AuthServiceImpl implements AuthService {
         this.customMessageSource = customMessageSource;
         this.emailService = emailService;
         this.customUserService = customUserService;
+        this.sellerRepository = sellerRepository;
     }
 
     @Override
@@ -99,17 +103,25 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void sendLoginOtp(String email) throws MessagingException {
-        String SIGNING_PREFIX="signing_";
+    public void sendLoginOtp(String email, USER_ROLE role) throws MessagingException {
+        String SIGNING_PREFIX = "signing_";
+        String SELLER_PREFIX = "seller_";
 
         if(email.startsWith(SIGNING_PREFIX)){
             email = email.substring(SIGNING_PREFIX.length());
 
-            User user = userRepository.findByEmail(email);
-            if(user == null){
-                throw new CustomRunTimeException(customMessageSource.get(MessageConstants.ERROR_DOESNT_EXIST, customMessageSource.get(MessageConstants.USER)));
-            }
+            if(role.equals(USER_ROLE.ROLE_SELLER)){
 
+                Seller seller = sellerRepository.findByEmail(email);
+                if(seller == null){
+                    throw new CustomRunTimeException(customMessageSource.get(MessageConstants.CRUD_NOT_EXIST, customMessageSource.get(MessageConstants.Seller)));
+                }
+            } else {
+                User user = userRepository.findByEmail(email);
+                if(user == null){
+                    throw new CustomRunTimeException(customMessageSource.get(MessageConstants.ERROR_DOESNT_EXIST, customMessageSource.get(MessageConstants.USER)));
+                }
+            }
         }
 
         VerificationCode oldVerificationCode = verificationCodeRepository.findByEmail(email);
@@ -143,16 +155,24 @@ public class AuthServiceImpl implements AuthService {
 
 //        AuthResponse
         return jwtProvider.generateJwtToken(authentication);
+
     }
 
     private Authentication authenticate(String username, String otp) {
         UserDetails userDetails = customUserService.loadUserByUsername(username);
-        if(userDetails == null){
+
+        String SELLER_PREFIX = "seller_";
+        String actualUserName = null;
+        if (username.startsWith(SELLER_PREFIX)) {
+            actualUserName = username.substring(SELLER_PREFIX.length()) ;
+        }
+
+        if (userDetails == null) {
             throw new BadCredentialsException("Invalid username");
         }
 
-        VerificationCode verificationCode = verificationCodeRepository.findByEmail(username);
-        if(verificationCode == null || !verificationCode.getOtp().equals(otp)){
+        VerificationCode verificationCode = verificationCodeRepository.findByEmail(actualUserName);
+        if (verificationCode == null || !verificationCode.getOtp().equals(otp)) {
             throw new BadCredentialsException("Invalid OTP");
         }
 

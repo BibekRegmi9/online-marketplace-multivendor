@@ -3,6 +3,8 @@ package com.bibek.model;
 import com.bibek.enums.AccountStatus;
 import com.bibek.enums.USER_ROLE;
 import com.bibek.utils.common.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonRawValue;
 import jakarta.persistence.*;
 import lombok.*;
 

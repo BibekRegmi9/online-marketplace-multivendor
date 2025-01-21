@@ -8,6 +8,7 @@ import com.bibek.generics.pojo.GlobalApiResponse;
 import com.bibek.model.User;
 import com.bibek.model.VerificationCode;
 import com.bibek.repository.UserRepository;
+import com.bibek.request.LoginOtpRequest;
 import com.bibek.request.LoginRequest;
 import com.bibek.request.SignupRequest;
 import com.bibek.response.AuthResponse;
@@ -45,9 +46,9 @@ public class AuthController extends BaseController {
     }
 
     @PostMapping("/send/signup-login-otp")
-    public ResponseEntity<GlobalApiResponse> sendOtp(@RequestBody VerificationCode email){
+    public ResponseEntity<GlobalApiResponse> sendOtp(@RequestBody LoginOtpRequest request){
         try {
-            authService.sendLoginOtp(email.getEmail());
+            authService.sendLoginOtp(request.getEmail(), request.getRole());
         } catch (MessagingException e) {
             throw new RuntimeException(e);
         }
