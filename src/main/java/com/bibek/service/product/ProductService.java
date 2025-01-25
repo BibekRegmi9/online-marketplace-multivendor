@@ -19,7 +19,7 @@ public interface ProductService {
                                 String size,
                                 Integer minPrice,
                                 Integer maxPrice,
-                                String minDiscount,
+                                Integer minDiscount,
                                 String stock,
                                 String sort,
                                 Integer pageNumber);
