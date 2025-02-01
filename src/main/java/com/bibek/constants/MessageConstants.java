@@ -32,5 +32,10 @@ public class MessageConstants {
     public static final String PRODUCT="product";
     public static final String CART_ITEM="cart.item";
     public static final String NOT_EXIST="doesnot.exists";
+    public static final String ORDER="order";
+    public static final String Access_Denied="access.denied";
+    public static final String ORDER_ITEM="order.item";
+
+
 
 }
