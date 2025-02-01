@@ -162,7 +162,7 @@ public class AuthServiceImpl implements AuthService {
         UserDetails userDetails = customUserService.loadUserByUsername(username);
 
         String SELLER_PREFIX = "seller_";
-        String actualUserName = null;
+        String actualUserName = username;
         if (username.startsWith(SELLER_PREFIX)) {
             actualUserName = username.substring(SELLER_PREFIX.length()) ;
         }

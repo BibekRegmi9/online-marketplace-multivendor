@@ -30,6 +30,7 @@ public class UserResponse {
         this.addressList = user.getAddress() != null ? new ArrayList<>(user.getAddress()) : null;
     }
 
+
     // Constructor with addressList
     public UserResponse(String fullName, String email, String phoneNo, String role, List<Address> addressList) {
         this.fullName = fullName;

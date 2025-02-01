@@ -30,5 +30,7 @@ public class MessageConstants {
     public static final String DUPLICATE_EMAIL_VALIDATION="email.valid";
     public static final String MRP_PRICE_ILLEGAL="mrp.price.illegal";
     public static final String PRODUCT="product";
+    public static final String CART_ITEM="cart.item";
+    public static final String NOT_EXIST="doesnot.exists";
 
 }

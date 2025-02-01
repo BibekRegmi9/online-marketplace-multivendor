@@ -1,6 +1,7 @@
 package com.bibek.model;
 
 import com.bibek.enums.USER_ROLE;
+import com.bibek.response.UserResponse;
 import com.bibek.utils.common.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -41,4 +42,11 @@ public class User extends BaseEntity {
     @ManyToMany
     @JsonIgnore
     private Set<Coupon> usedCoupons = new HashSet<>();
+
+    public User(UserResponse userResponse){
+        this.fullName = userResponse.getFullName();
+        this.email = userResponse.getEmail();
+        this.mobile = userResponse.getPhoneNo();
+
+    }
 }

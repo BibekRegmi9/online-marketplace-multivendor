@@ -23,7 +23,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponse findUserByJwtToken(String jwtToken) {
+    public User findUserByJwtToken(String jwtToken) {
         String email = jwtProvider.getEmailFromToken(jwtToken);
 
         User user = this.findUserByEmail(email);
@@ -32,7 +32,8 @@ public class UserServiceImpl implements UserService {
             throw new CustomRunTimeException(customMessageSource.get(MessageConstants.USER, customMessageSource.get(MessageConstants.CRUD_NOT_EXIST)));
         }
 
-        return new UserResponse(user);
+//        return new UserResponse(user);
+        return user;
     }
 
     @Override
