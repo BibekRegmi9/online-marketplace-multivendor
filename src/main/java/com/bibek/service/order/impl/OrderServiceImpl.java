@@ -121,7 +121,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderItem findById(Long id) {
+    public OrderItem getOrderItemById(Long id) {
         return orderItemRepository.findById(id).orElseThrow(() -> new CustomRunTimeException(customMessageSource.get(MessageConstants.CRUD_NOT_EXIST, customMessageSource.get(MessageConstants.ORDER_ITEM))));
     }
 }

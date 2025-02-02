@@ -19,6 +19,6 @@ public interface OrderService {
 
     Order cancelOrder(Long orderId, User user);
 
-    OrderItem findById(Long id);
+    OrderItem getOrderItemById(Long id);
 
 }
