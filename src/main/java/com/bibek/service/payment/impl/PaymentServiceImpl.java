@@ -12,6 +12,7 @@ import com.bibek.response.PaymentLinkResponse;
 import com.bibek.service.payment.PaymentService;
 import com.bibek.service.seller.SellerService;
 import com.bibek.service.sellerReport.SellerReportService;
+import com.bibek.service.transaction.TransactionService;
 import com.bibek.service.user.UserService;
 import com.razorpay.Payment;
 import com.razorpay.PaymentLink;
@@ -34,18 +35,20 @@ public class PaymentServiceImpl implements PaymentService {
     private final UserService userService;
     private final SellerService sellerService;
     private final SellerReportService sellerReportService;
+    private final TransactionService transactionService;
     private String apiKey = "apiKey";
     private String apiSecret = "apiSecret";
     private String stripeSecretKey="scripeSecretKey";
 
 
-    public PaymentServiceImpl(PaymentOrderRepository paymentOrderRepository, OrderRepository orderRepository, CustomMessageSource customMessageSource, UserService userService, SellerService sellerService, SellerReportService sellerReportService) {
+    public PaymentServiceImpl(PaymentOrderRepository paymentOrderRepository, OrderRepository orderRepository, CustomMessageSource customMessageSource, UserService userService, SellerService sellerService, SellerReportService sellerReportService, TransactionService transactionService) {
         this.paymentOrderRepository = paymentOrderRepository;
         this.orderRepository = orderRepository;
         this.customMessageSource = customMessageSource;
         this.userService = userService;
         this.sellerService = sellerService;
         this.sellerReportService = sellerReportService;
+        this.transactionService = transactionService;
     }
 
     @Override
@@ -156,8 +159,8 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public void createPayment(String paymentId, String paymentLinkId, String jwt) throws RazorpayException {
-        User user = userService.findUserByJwtToken(jwt);
-        PaymentLinkResponse paymentLinkResponse;
+//        User user = userService.findUserByJwtToken(jwt);
+//        PaymentLinkResponse paymentLinkResponse;
 
         PaymentOrder paymentOrder = this.getPaymentOrderByPaymentId(paymentLinkId);
 
@@ -165,7 +168,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         if(paymentSuccess){
             for(Order order: paymentOrder.getOrders()){
-//                transactionService.createTransaction(order);
+                transactionService.createTransaction(order);
                 Seller seller = sellerService.getSellerById(order.getSellerId());
                 SellerReport sellerReport = sellerReportService.getSellerReport(seller);
                 sellerReport.setTotalOrders(sellerReport.getTotalOrders() + 1);

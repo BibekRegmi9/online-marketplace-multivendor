@@ -38,4 +38,5 @@ public class MessageConstants {
     public static final String SELLER_REPORT="seller.report";
     public static final String PAYMENT_ORDER="payment.order";
     public static final String PAYMENT="payment";
+    public static final String TRANSACTION="transaction";
 }
