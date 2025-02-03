@@ -35,7 +35,7 @@ public class MessageConstants {
     public static final String ORDER="order";
     public static final String Access_Denied="access.denied";
     public static final String ORDER_ITEM="order.item";
-
-
-
+    public static final String SELLER_REPORT="seller.report";
+    public static final String PAYMENT_ORDER="payment.order";
+    public static final String PAYMENT="payment";
 }

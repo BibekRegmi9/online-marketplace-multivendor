@@ -15,6 +15,7 @@ import com.bibek.request.LoginRequest;
 import com.bibek.service.auth.AuthService;
 import com.bibek.service.email.EmailService;
 import com.bibek.service.seller.SellerService;
+import com.bibek.service.sellerReport.SellerReportService;
 import com.bibek.utils.OtpUtil;
 import jakarta.mail.MessagingException;
 import org.springframework.http.ResponseEntity;
@@ -31,15 +32,17 @@ public class SellerController extends BaseController {
     private static final String SELLER_PREFIX = "seller_";
     private final EmailService emailService;
     private final JwtProvider jwtProvider;
+    private final SellerReportService sellerReportService;
 
 
-    public SellerController(SellerService sellerService, AuthService authService, VerificationCodeRepository verificationCodeRepository, CustomMessageSource customMessageSource, EmailService emailService, JwtProvider jwtProvider) {
+    public SellerController(SellerService sellerService, AuthService authService, VerificationCodeRepository verificationCodeRepository, CustomMessageSource customMessageSource, EmailService emailService, JwtProvider jwtProvider, SellerReportService sellerReportService) {
         this.sellerService = sellerService;
         this.authService = authService;
         this.verificationCodeRepository = verificationCodeRepository;
         this.customMessageSource = customMessageSource;
         this.emailService = emailService;
         this.jwtProvider = jwtProvider;
+        this.sellerReportService = sellerReportService;
     }
 
     @PostMapping("/login")
@@ -99,11 +102,13 @@ public class SellerController extends BaseController {
         return ResponseEntity.ok(successResponse(customMessageSource.get(MessageConstants.CRUD_GET, customMessageSource.get(MessageConstants.Seller)), seller));
     }
 
-//    @GetMapping("/report")
-//    public ResponseEntity<GlobalApiResponse> getSellerReport(@RequestHeader("Authorization") String jwt){
-//        Seller seller = sellerService.getSellerByEmail(jwtProvider.getEmailFromToken(jwt));
-//        SellerReport sellerReport =
-//    }
+    @GetMapping("/report")
+    public ResponseEntity<GlobalApiResponse> getSellerReport(@RequestHeader("Authorization") String jwt){
+        Seller seller = sellerService.getSellerByEmail(jwtProvider.getEmailFromToken(jwt));
+        SellerReport sellerReport = sellerReportService.getSellerReport(seller);
+        return ResponseEntity.ok(successResponse(customMessageSource.get(MessageConstants.CRUD_GET, customMessageSource.get(MessageConstants.SELLER_REPORT)), sellerReport));
+
+    }
 
     @GetMapping
     public ResponseEntity<GlobalApiResponse> getAllSeller(@RequestParam(required = false)AccountStatus accountStatus){
