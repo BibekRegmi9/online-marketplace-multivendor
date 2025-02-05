@@ -41,4 +41,6 @@ public class MessageConstants {
     public static final String PAYMENT="payment";
     public static final String TRANSACTION="transaction";
     public static final String REVIEW="review";
+    public static final String COUPON="coupon";
+    public static final String COUPON_VALID="coupon.valid";
 }
