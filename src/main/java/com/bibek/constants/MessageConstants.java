@@ -19,6 +19,7 @@ public class MessageConstants {
     public static final String CRUD_NOT_EXIST = "crud.not_exits";
     public static final String COULD_NOT_DELETE = "could.not.delete";
     public static final String CANT_UPDATE = "cant.update";
+    public static final String CANT_DELETE = "cant.delete";
     public static final String USER = "user";
     public static final String Seller = "seller";
     public static final String ROLE = "role";
@@ -39,4 +40,5 @@ public class MessageConstants {
     public static final String PAYMENT_ORDER="payment.order";
     public static final String PAYMENT="payment";
     public static final String TRANSACTION="transaction";
+    public static final String REVIEW="review";
 }
