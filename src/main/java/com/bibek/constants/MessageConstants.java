@@ -43,4 +43,6 @@ public class MessageConstants {
     public static final String REVIEW="review";
     public static final String COUPON="coupon";
     public static final String COUPON_VALID="coupon.valid";
+    public static final String HOME_CATEGORY="home.category";
+
 }
